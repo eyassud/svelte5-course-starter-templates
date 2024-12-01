@@ -21,3 +21,5 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
 dev-portifolio-sanity/.history
+.history/book-nest/*
+.history
