@@ -1,3 +1,14 @@
+<footer class="footer">
+  <div class="footer-container">
+    <h3 class="semi-bold mb xs">Dan Eyassu</h3>
+    <div class="mb-l">
+      <a class="footer-link" href="/#about-me">GitHub</a>
+      <a class="footer-link" href="/#my-work">Twitter</a>
+      <a class="footer-link" href="/#contact-form">LinkedIn</a>
+    </div>
+  </div>
+</footer>
+
 <style>
   .footer {
     background-color: black;

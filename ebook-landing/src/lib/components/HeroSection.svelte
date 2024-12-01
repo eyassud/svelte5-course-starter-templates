@@ -1,3 +1,38 @@
+<script>
+  import bookCover from "$assets/book_cover.png";
+  import phoneCover from "$assets/phone_cover.png";
+  import { Button } from "$components";
+
+  let { children, ...props } = $props(); 
+</script>
+
+<section class="hero">
+  <div class="hero-showcase text-center bold">
+    <h1 class="purple">MOVE TO</h1>
+    <h1 class="purple mb-xs">SPAIN</h1>
+    <h4 class="italic semi-bold">
+      There's no need to make the same mistakes I made.
+    </h4>
+    <img class="book-cover" src={bookCover} alt="Book Cover" />
+    <img class="phone-cover" src={phoneCover} alt="Phone Cover" />
+  </div>
+  <div class="hero-text white text-center">
+    {#if children}
+      {@render children()}
+    {:else}
+    <h1>THIS EBOOK WILL</h1>
+    <h1>SAVE YOU MONEY,</h1>
+    <h1 class="mb-m">TIME & NERVES</h1>
+    <p class="light-grey mb-l">
+      I've been living in Spain for 5 years now and I've made all the mistakes
+      you can make. I've lost money, time and nerves. I don't want you to make
+      the same mistakes. I want you to move to Spain and enjoy your life here.
+    </p>
+    <Button>Purchase E-book for $10</Button>
+    {/if}
+  </div>
+</section>
+
 <style>
   .hero {
     display: flex;

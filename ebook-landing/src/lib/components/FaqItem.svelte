@@ -1,3 +1,18 @@
+<script>
+  import chevronDown from "$assets/icons/chevron-down.svg";
+
+  let { faq, isExpanded, ...props } = $props();
+</script>
+
+<button class="container" class:container-expanded={isExpanded} {...props}>
+  <div class="question-and-answer">
+    <p class="question mb-s">{faq.question}</p>
+    <p class="answer">{faq.answer}</p>
+  </div>
+  <!-- svelte-ignore a11y_missing_attribute -->
+  <img src={chevronDown} />
+</button>
+
 <style>
   .container {
     display: flex;

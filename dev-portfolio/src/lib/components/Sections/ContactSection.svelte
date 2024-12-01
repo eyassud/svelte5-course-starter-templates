@@ -1,3 +1,94 @@
+<script lang="ts">
+  import { Button, SectionHeadline } from "$components";
+
+  let contactName = $state("aa");
+  let contactMail = $state("aa");
+  let informationAboutProject = $state("bbbb");
+  let isFormInvalid = $state(false);
+  let isEmailSent = $state(false);
+  let showErrorMessage = $state(false);
+
+  async function onSubmit(event: Event) {
+    event.preventDefault();
+
+    if (contactMail && contactName && informationAboutProject) {
+      const response = await fetch("/api/send-maila", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contactMail,
+          contactName,
+          informationAboutProject,
+        }),
+      });
+
+      if (response.ok) {
+        isEmailSent = true;
+      } else {
+        showErrorMessage = true;
+      }
+    } else {
+      isFormInvalid = true;
+    }
+  }
+
+  $effect(() => {
+    if (contactMail || contactName || informationAboutProject) {
+      isFormInvalid = false;
+    }
+  });
+</script>
+
+<section class="mt-l">
+  <SectionHeadline sectionName="contact-form">Let's Talk</SectionHeadline>
+  <div class="form-container mt-m default-margin">
+    {#if isEmailSent}
+      <div class="spinner-container">
+        <h3>Thank you</h3>
+        <!-- <Button>Send</Button> -->
+      </div>
+    {:else if showErrorMessage}
+      <h3>We seem to have a problem</h3>
+    {:else}
+      <form>
+        <input
+          class="text-input mb-m"
+          class:input-error={isFormInvalid && !Boolean(contactName.length)}
+          placeholder="Your Name"
+          bind:value={contactName}
+        />
+        <input
+          class="text-input mb-m"
+          class:input-error={isFormInvalid && !Boolean(contactMail.length)}
+          placeholder="Your Email"
+          bind:value={contactMail}
+        />
+        <textarea
+          placeholder="Tell me what's up."
+          class:input-error={isFormInvalid &&
+            !Boolean(informationAboutProject.length)}
+          bind:value={informationAboutProject}
+        ></textarea>
+        <Button onclick={onSubmit}>Submit</Button>
+      </form>
+    {/if}
+
+    <div class="form-text">
+      <h3 class="bold mb-s">Talk to me about your project</h3>
+      <p>
+        I'm always excited to hear about new and innovative ideas! Whether
+        you're in the early stages of planning or have a well-defined project,
+        I'm here to help bring your vision to life. Feel free to drop me a
+        message with some details about your project, and let's start a
+        conversation about how we can work together. I look forward to
+        connecting with you and discussing the possibilities. Talk to you soon!
+      </p>
+    </div>
+  </div>
+</section>
+
 <style>
   section {
     padding-bottom: 140px;

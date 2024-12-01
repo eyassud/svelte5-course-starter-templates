@@ -1,3 +1,24 @@
+<script lang="ts">
+  import SectionHeadline from "../SectionHeadline.svelte";
+
+  interface SkillSectionProps {
+    skills: Skill[];
+  }
+
+  let { skills }: SkillSectionProps = $props();
+</script>
+
+<section class="mt-l">
+  <SectionHeadline sectionName="skills">Skills</SectionHeadline>
+  <div class="wrapper default-margin">
+    <div class="skills-contanier mt-m">
+      {#each skills as skill}
+        <i class={skill.iconClass}></i>
+      {/each}
+    </div>
+  </div>
+</section>
+
 <style>
   .wrapper {
     display: flex;

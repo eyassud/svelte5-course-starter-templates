@@ -1,3 +1,60 @@
+<script lang="ts">
+  import type { Snippet } from "svelte";
+
+  interface BasicProps {
+    children: Snippet;
+    isSecondary?: boolean;
+    isDanger?: boolean;
+    isMenu?: boolean;
+  }
+
+  interface ButtonProps extends BasicProps {
+    onclick: (e: MouseEvent) => void;
+    href?: never;
+    type?: "button" | "submit" ;
+  }
+
+  type ComponentProps = ButtonProps | LinkProps;
+
+  interface LinkProps extends BasicProps {
+    href: string;
+    onclick?: never;
+  }
+
+  let {
+    children,
+    href,
+    onclick,
+    isSecondary,
+    isDanger,
+    isMenu,
+    ...props
+  }: ComponentProps = $props();
+</script>
+
+{#if href}
+  <a
+    {href}
+    class="btn"
+    class:btn-danger={isDanger}
+    class:btn-secondary={isSecondary}
+    class:btn-menu={isMenu}
+  >
+    {@render children()}
+  </a>
+{:else}
+  <button
+    {...props}
+    class="btn"
+    class:btn-danger={isDanger}
+    class:btn-secondary={isSecondary}
+    class:btn-menu={isMenu}
+    {onclick}
+  >
+    {@render children()}
+  </button>
+{/if}
+
 <style>
   a {
     display: block;
