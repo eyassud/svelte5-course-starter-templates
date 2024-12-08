@@ -1,3 +1,35 @@
+<script lang="ts">
+  import { StarRating } from "$components";
+import type { Book } from "$lib/state/user-state.svelte";
+
+  interface BookCardProps {
+    book: Book;
+  }
+  let { book }: BookCardProps = $props();
+
+  let bookStatus = $derived(
+    book.finished_reading_on
+      ? "Finished"
+      : book.started_reading_on
+        ? "Currently reading"
+        : "Not started"
+  );
+</script>
+
+<a href={`/private/books/${book.id}`} class="book-card">
+  <div class="book-status">
+    <span>{bookStatus}</span>
+  </div>
+  <div class="book-cover">
+    <img src={book.cover_image} alt="" />
+  </div>
+  <div class="book-info">
+    <h4>{book.title}</h4>
+    <p class="mb-s">{book.author}</p>
+    <StarRating value={book.rating || 0} isReadOnly={true} />
+  </div>
+</a>
+
 <style>
   .book-card {
     position: relative;
