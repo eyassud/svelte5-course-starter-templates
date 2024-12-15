@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Button } from "$components";
   import StarRating from "$components/StarRating.svelte";
-  import type { Book } from "$lib/state/user-state.svelte";
+  import { getUserState, type Book } from "$lib/state/user-state.svelte";
   import Icon from "@iconify/svelte";
 
   interface BookPageProps {
@@ -9,7 +9,8 @@
   }
 
   let { data }: BookPageProps = $props();
-  let book = $derived(data.book);
+  let userContext = getUserState();
+  let book = $derived(userContext.getBookById(data.book.id) || data.book);
   let isEditMode = $state(false);
 
   let title = $state(book.title);
@@ -21,8 +22,36 @@
     history.back();
   }
 
-  function toggleEditMode() {
+  async function toggleEditModeAndSaveToDatabase() {
+    if (isEditMode) {
+      await userContext.updateBook(book.id, {
+        title,
+        author,
+        description,
+        genre,
+      });
+    }
+
     isEditMode = !isEditMode;
+  }
+
+  async function updateReadingStatus() {
+    const hasStartedReading = Boolean(book.started_reading_on);
+    const currentTimeStamp = new Date().toISOString();
+
+    if (hasStartedReading) {
+      await userContext.updateBook(book.id, {
+        finished_reading_on: currentTimeStamp,
+      });
+    } else {
+      await userContext.updateBook(book.id, {
+        started_reading_on: currentTimeStamp,
+      });
+    }
+  }
+
+  async function updateDatabaseRating(newRating: number) {
+    await userContext.updateBook(book.id, { rating: newRating });
   }
 </script>
 
@@ -30,7 +59,7 @@
   <h2 class="book-title mt-m">{book.title}</h2>
   <p class="book-author">{book.author}</p>
   <h4 class="mt-m mb-xs semi-bold">Your rating</h4>
-  <StarRating value={book.rating} />
+  <StarRating value={book.rating} {updateDatabaseRating} />
   <p class="small-font">
     Click to {book.rating ? "change" : "give"} your rating
   </p>
@@ -47,8 +76,8 @@
   {/if}
   {#if !book.finished_reading_on}
     <Button
-      isSecondary={true}
-      onclick={() => console.log("Updating reading status")}
+      isSecondary={Boolean(book.started_reading_on)}
+      onclick={updateReadingStatus}
     >
       {book.started_reading_on
         ? "I finished reading this book"
@@ -74,7 +103,7 @@
       <input type="text" class="input" bind:value={author} name="author" />
     </div>
     <h4 class="mt-m mb-xs semi-bold">Your rating</h4>
-    <StarRating value={book.rating || 0} />
+    <StarRating value={book.rating || 0} {updateDatabaseRating} />
     <p class="small-font">
       Click to {book.rating ? "change" : "give"} your rating
     </p>
@@ -87,8 +116,8 @@
     ></textarea>
     {#if !book.finished_reading_on}
       <Button
-        isSecondary={true}
-        onclick={() => console.log("Updating reading status")}
+        isSecondary={Boolean(book.started_reading_on)}
+        onclick={updateReadingStatus}
       >
         {book.started_reading_on
           ? "I finished reading this book"
@@ -112,7 +141,7 @@
         {@render bookInfo()}
       {/if}
       <div class="buttons-container mt-m">
-        <Button isSecondary={true} onclick={toggleEditMode}>
+        <Button isSecondary={true} onclick={toggleEditModeAndSaveToDatabase}>
           {isEditMode ? "Save changes" : "Edit"}
         </Button>
         <Button
