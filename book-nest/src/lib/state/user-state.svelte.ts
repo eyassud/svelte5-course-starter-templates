@@ -96,7 +96,7 @@ export class UserState {
 
         return mostCommonGenre || null
     }
-    
+
     getBookById(bookId: number) {
         return this.allBooks.find((book) => book.id === bookId);
     }
@@ -116,6 +116,22 @@ export class UserState {
                 return book;
             });
         }
+    }
+
+    async uploadBookCover(file: File, bookId: number) {
+        if (!this.user || !this.supabase) return;
+
+        const filePath = `${this.user.id}/${new Date().getTime()}_${file.name}`;
+        const { error: uploadError } = await this.supabase.storage.from("book-covers").upload(filePath, file);
+
+        if (uploadError) {
+            console.error("Error uploading file", uploadError);
+            return;
+        }
+
+        const { data: { publicUrl } } = this.supabase.storage.from("book-covers").getPublicUrl(filePath);
+
+        await this.updateBook(bookId, { cover_image: publicUrl });
     }
 
     async logout() {
