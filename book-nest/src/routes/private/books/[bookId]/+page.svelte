@@ -55,9 +55,8 @@
     await userContext.updateBook(book.id, { rating: newRating });
   }
 
-
   async function handleDrop(e: CustomEvent<any>): Promise<void> {
-    const {acceptedFiles} = e.detail;
+    const { acceptedFiles } = e.detail;
 
     if (acceptedFiles.length > 0) {
       const file = acceptedFiles[0] as File;
@@ -157,7 +156,7 @@
         </Button>
         <Button
           isDanger={true}
-          onclick={() => console.log("Delete book from library")}
+          onclick={() => userContext.deleteBookFromLibrary(book.id)}
         >
           Delete book from library
         </Button>
@@ -168,11 +167,11 @@
         <img src={book.cover_image} alt="Book cover" />
       {:else}
         <Dropzone
-        on:drop={handleDrop}
+          on:drop={handleDrop}
           multiple={false}
           accept="image/*"
           maxSize={5 * 1024 * 1024}
-          containerClass={"dropzone-cover"}
+          containerClass={"dropzone"}
         >
           <Icon icon="bi:camera-fill" width={"40"} />
           <p>Add book cover</p>
@@ -234,7 +233,7 @@
     margin-right: 8px;
   }
 
-  :global(.dropzone-cover) {
+  :global(.dropzone) {
     height: 100%;
     border-radius: 15px !important;
     display: flex !important;
