@@ -1,18 +1,16 @@
 <script lang="ts">
   import { Button } from "$components";
+  import { getUserState, type OpenAiBook } from "$lib/state/user-state.svelte";
   import { convertFileToBase64 } from "$lib/utils/openai-helpers";
   import Icon from "@iconify/svelte";
   import Dropzone from "svelte-file-dropzone";
 
+  
   let isLoading = $state(false);
   let errorMessage = $state("");
   let recognizedBooks = $state<OpenAiBook[]>([]);
   let booksSuccessfullyAdded = $state(false);
-
-  interface OpenAiBook {
-    bookTitle: string;
-    author: string;
-  }
+  let userContext = getUserState();
 
   async function handleDrop(e: CustomEvent<any>) {
     const { acceptedFiles } = e.detail;
@@ -34,13 +32,28 @@
         const result = (await response.json()) as { bookArray: OpenAiBook[] };
         recognizedBooks = result.bookArray;
         isLoading = false;
-        console.log(result);
       } catch (error) {
         errorMessage = "Error processing the uploaded file.";
       }
     } else {
       errorMessage =
         "Could not upload given file. Are you sure it's an image with a file size of less than 10MB?";
+    }
+  }
+
+  function removeBook(index: number) {
+    recognizedBooks.splice(index, 1);
+  }
+
+  async function addAllBooks() {
+    isLoading = true;
+    try {
+      await userContext.addBooksToLibrary(recognizedBooks);
+      booksSuccessfullyAdded = true;
+    } catch (error: any) {
+      errorMessage = error.message;
+    } finally {
+      isLoading = false;
     }
   }
 </script>
@@ -91,7 +104,7 @@
                 type="button"
                 aria-label="Remove book"
                 class="remove-book"
-                onclick={() => console.log(i)}
+                onclick={() => removeBook(i)}
               >
                 <Icon icon="streamline:delete-1-solid" width={"24"} />
               </button>
@@ -100,7 +113,7 @@
         {/each}
       </tbody>
     </table>
-    <Button onclick={(e: MouseEvent) => console.log("Add all")} type="button"
+    <Button onclick={addAllBooks} type="button"
       >Add all books</Button
     >
   </div>
@@ -108,7 +121,7 @@
   <h4>
     The selected {recognizedBooks.length} books have been added to your library
   </h4>
-  <Button href="/private/library">Go to library</Button>
+  <Button href="/private/dashboard">Go to library</Button>
 {/if}
 
 <style>

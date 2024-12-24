@@ -9,6 +9,11 @@ interface UserStateProps {
     user: User | null;
 }
 
+export interface OpenAiBook {
+    bookTitle: string;
+    author: string;
+}
+
 export interface Book {
     author: string | null
     cover_image: string | null
@@ -134,7 +139,7 @@ export class UserState {
         await this.updateBook(bookId, { cover_image: publicUrl });
     }
 
-    async deleteBookFromLibrary(bookId: number) {   
+    async deleteBookFromLibrary(bookId: number) {
         if (!this.supabase) return;
 
         const { status, error } = await this.supabase.from("books")
@@ -146,6 +151,31 @@ export class UserState {
         }
 
         goto('/private/dashboard');
+    }
+
+    async addBooksToLibrary(booksToAdd: OpenAiBook[]) {
+        if (!this.user || !this.supabase) return;
+
+        const userId = this.user.id;
+
+        const processedBooks = booksToAdd.map((book) => ({
+            title: book.bookTitle,
+            author: book.author,
+            user_id: userId
+        }));
+
+        const { error } = await this.supabase.from("books").insert(processedBooks);
+
+        if (error)
+            throw new Error(error.message);
+        else {
+            const { data } = await this.supabase.from("books").select("*").eq("user_id", userId);
+
+            if (!data)
+                throw new Error("Error fetching books");
+
+            this.allBooks = data;
+        }
     }
 
     async logout() {
