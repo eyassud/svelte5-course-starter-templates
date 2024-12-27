@@ -22,6 +22,14 @@
       userName = userContext.userName;
     }
   });
+
+  async function toggleEditModeAndSaveToDatabase() {
+    isEditMode = !isEditMode;
+
+    if (!isEditMode) {
+     await userContext.updateAccountData(userName, email);
+    }
+  }
 </script>
 
 <div class="settings-page">
@@ -43,11 +51,8 @@
     {/if}
 
     <div class="buttons-container mt-l">
-      <Button
-        isSecondary={true}
-        onclick={() => {
-          isEditMode = !isEditMode;
-        }}>{isEditMode ? "Save Changes" : "Edit"}</Button
+      <Button isSecondary={true} onclick={toggleEditModeAndSaveToDatabase}
+        >{isEditMode ? "Save Changes" : "Edit"}</Button
       >
       <Button isDanger={true} onclick={() => console.log("delete")}
         >Delete Account</Button

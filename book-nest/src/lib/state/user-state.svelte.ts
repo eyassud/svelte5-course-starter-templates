@@ -31,6 +31,7 @@ export interface Book {
 type UpdatableBookFields = Omit<Book, "id" | "user_id" | "created_at">;
 
 export class UserState {
+
     session = $state<Session | null>(null);
     supabase = $state<SupabaseClient<Database> | null>(null);
     user = $state<User | null>(null);
@@ -175,6 +176,27 @@ export class UserState {
                 throw new Error("Error fetching books");
 
             this.allBooks = data;
+        }
+    }
+
+    async updateAccountData(userName: string, email: string) {
+        if (!this.session) return;
+
+        try {
+            const response = await fetch("/api/update-account", {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.session.access_token}`
+                },
+                body: JSON.stringify({ userName, email })
+            }            );
+
+            if (response.ok) {
+                this.userName = userName;
+            }
+        } catch (error) {
+            console.error("Error updating account data", error);
         }
     }
 
