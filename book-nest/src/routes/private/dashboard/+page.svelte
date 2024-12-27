@@ -24,9 +24,35 @@
     </div>
   </div>
 
-  <BookCategory booksToDisplay={userContext.getHighestRatedBooks()} categoryName="Your favorite books" />
-  <BookCategory booksToDisplay={userContext.getUnreadBooks()} categoryName="Recently added, unread books" />
-  <BookCategory booksToDisplay={userContext.getFavoriteGenre()} categoryName="Highest rated books from your favorite genre: Fantasy" />
+  {#if allBooks.length}
+    {#if userContext.getHighestRatedBooks().length}
+      <BookCategory
+        booksToDisplay={userContext.getHighestRatedBooks()}
+        categoryName="Your favorite books"
+      />
+    {/if}
+    <BookCategory
+      booksToDisplay={userContext.getUnreadBooks()}
+      categoryName="Recently added, unread books"
+    />
+    {#if userContext.getFavoriteGenre()}
+      <BookCategory
+        booksToDisplay={userContext.getFavoriteGenre()}
+        categoryName="Highest rated books from your favorite genre: Fantasy"
+      />
+    {/if}
+  {:else}
+    <a href="/private/scan-shelf" class="upload-hint mt-l">
+      <h3>
+        You have no books in your library at this time. Click here to get
+        started!
+      </h3>
+      <div class="mt-m">
+        <Icon icon="icons8:plus" width={"72"} height={"72"} />
+        <p>Add books</p>
+      </div>
+    </a>
+  {/if}
 </div>
 
 <style>

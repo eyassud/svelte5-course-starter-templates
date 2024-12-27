@@ -30,6 +30,14 @@
      await userContext.updateAccountData(userName, email);
     }
   }
+
+  async function deleteAccount() {
+    const confirmDelete = confirm("Are you sure you want to delete your account?");
+
+    if (confirmDelete) {
+      await userContext.deleteAccount();
+    }
+  }
 </script>
 
 <div class="settings-page">
@@ -54,7 +62,7 @@
       <Button isSecondary={true} onclick={toggleEditModeAndSaveToDatabase}
         >{isEditMode ? "Save Changes" : "Edit"}</Button
       >
-      <Button isDanger={true} onclick={() => console.log("delete")}
+      <Button isDanger={true} onclick={deleteAccount}
         >Delete Account</Button
       >
     </div>
